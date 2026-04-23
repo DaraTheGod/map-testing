@@ -1,17 +1,30 @@
 "use client";
 
 import { GeoJSON, useMap } from "react-leaflet";
+import L from "leaflet";
+import { Feature, FeatureCollection } from "geojson";
 import communes from "@/lib/khm_admin3.json";
+
+interface CommuneFeature extends Feature<
+  GeoJSON.Geometry,
+  { adm2_name: string; adm3_name: string }
+> {}
+
+interface CommuneLayerProps {
+  district: string;
+  selectedCommune: string | null;
+  onSelect: (commune: string) => void;
+}
 
 export default function CommuneLayer({
   district,
   selectedCommune,
   onSelect,
-}: any) {
+}: CommuneLayerProps) {
   const map = useMap();
 
   const filtered = communes.features.filter(
-    (f: any) => f.properties.adm2_name === district,
+    (f) => (f as CommuneFeature).properties.adm2_name === district,
   );
 
   return (
@@ -20,10 +33,12 @@ export default function CommuneLayer({
         {
           type: "FeatureCollection",
           features: filtered,
-        } as any
+        } as FeatureCollection
       }
-      style={(feature: any) => {
-        const name = feature.properties.adm3_name;
+      style={(feature) => {
+        if (!feature) return {};
+        const communeFeature = feature as CommuneFeature;
+        const name = communeFeature.properties.adm3_name;
         const isSelected = name === selectedCommune;
 
         return {
@@ -33,8 +48,10 @@ export default function CommuneLayer({
           fillOpacity: isSelected ? 0.6 : 0.2,
         };
       }}
-      onEachFeature={(feature: any, layer) => {
-        const name = feature.properties.adm3_name;
+      onEachFeature={(feature, layer) => {
+        if (!feature) return;
+        const communeFeature = feature as CommuneFeature;
+        const name = communeFeature.properties.adm3_name;
 
         layer.bindTooltip(name);
 
@@ -42,7 +59,7 @@ export default function CommuneLayer({
           onSelect(name);
 
           // 👇 zoom to selected commune only
-          map.fitBounds(layer.getBounds(), {
+          map.fitBounds((layer as any).getBounds(), {
             padding: [20, 20],
           });
         });
