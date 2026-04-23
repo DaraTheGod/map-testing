@@ -5,6 +5,16 @@
   --foreground: #171717;
 }
 
+.leaflet-interactive {
+  transition:
+    fill-opacity 0.15s ease,
+    stroke-width 0.15s ease;
+}
+
+.leaflet-interactive:focus {
+  outline: none !important;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
