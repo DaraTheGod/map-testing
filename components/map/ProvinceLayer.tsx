@@ -1,14 +1,21 @@
 "use client";
 
 import { GeoJSON, useMap } from "react-leaflet";
+import { Feature, FeatureCollection } from "geojson";
 import provinces from "@/lib/khm_admin1.json";
+
+type ProvinceFeature = Feature<GeoJSON.Geometry, { adm1_name: string }>;
+const provincesData = provinces as FeatureCollection<
+  GeoJSON.Geometry,
+  { adm1_name: string }
+>;
 
 export default function ProvinceLayer({ onSelect }: any) {
   const map = useMap();
 
   return (
     <GeoJSON
-      data={provinces as any}
+      data={provincesData}
       style={() => ({
         color: "#2563eb",
         weight: 2,
@@ -22,7 +29,7 @@ export default function ProvinceLayer({ onSelect }: any) {
         layer.on({
           click: () => {
             onSelect(name);
-            map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+            map.fitBounds((layer as any).getBounds(), { padding: [20, 20] });
           },
         });
       }}

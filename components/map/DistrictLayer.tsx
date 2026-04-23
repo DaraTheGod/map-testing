@@ -1,13 +1,17 @@
 "use client";
 
 import { GeoJSON, useMap } from "react-leaflet";
+import { Feature, FeatureCollection } from "geojson";
 import districts from "@/lib/khm_admin2.json";
+
+type DistrictFeature = Feature<GeoJSON.Geometry, { adm1_name: string; adm2_name: string }>;
+const districtsData = districts as FeatureCollection<GeoJSON.Geometry, { adm1_name: string; adm2_name: string }>;
 
 export default function DistrictLayer({ province, onSelect }: any) {
   const map = useMap();
 
-  const filtered = districts.features.filter(
-    (f: any) => f.properties.adm1_name === province,
+  const filtered = districtsData.features.filter(
+    (f) => f.properties.adm1_name === province,
   );
 
   return (
@@ -32,7 +36,7 @@ export default function DistrictLayer({ province, onSelect }: any) {
         layer.on({
           click: () => {
             onSelect(name);
-            map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+            map.fitBounds((layer as any).getBounds(), { padding: [20, 20] });
           },
         });
       }}

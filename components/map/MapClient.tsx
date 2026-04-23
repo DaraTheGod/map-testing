@@ -2,22 +2,33 @@
 
 import provinces from "@/lib/khm_admin1.json";
 import districts from "@/lib/khm_admin2.json";
-
-import { useState } from "react";
+import { Feature, FeatureCollection } from "geojson";
+import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
-
 import ProvinceLayer from "./ProvinceLayer";
 import DistrictLayer from "./DistrictLayer";
 import CommuneLayer from "./CommuneLayer";
 import EventMarker from "./MapMarker";
-import EventCard from "../../components/EventCard";
-import CreateEventPanel from "../../components/CreateEventPanel";
+import EventCard from "../EventCard";
+import CreateEventPanel from "../CreateEventPanel";
 import CreationPin from "./CreationPin";
-
 import { events as initialEvents } from "@/lib/events";
 import { getBounds } from "@/lib/getBounds";
 
-import { useEffect } from "react";
+type ProvinceFeature = Feature<GeoJSON.Geometry, { adm1_name: string }>;
+const provincesData = provinces as FeatureCollection<
+  GeoJSON.Geometry,
+  { adm1_name: string }
+>;
+
+type DistrictFeature = Feature<
+  GeoJSON.Geometry,
+  { adm1_name: string; adm2_name: string }
+>;
+const districtsData = districts as FeatureCollection<
+  GeoJSON.Geometry,
+  { adm1_name: string; adm2_name: string }
+>;
 
 function MapController({ setMap }: any) {
   const map = useMap();
@@ -188,7 +199,7 @@ export default function MapClient() {
               if (!mapInstance) return;
               if (commune) {
                 setCommune(null);
-                const districtFeatures = districts.features.filter(
+                const districtFeatures = districtsData.features.filter(
                   (f: any) => f.properties.adm2_name === district,
                 );
                 mapInstance.fitBounds(getBounds(districtFeatures), {
@@ -198,7 +209,7 @@ export default function MapClient() {
               }
               if (district) {
                 setDistrict(null);
-                const provinceFeatures = districts.features.filter(
+                const provinceFeatures = districtsData.features.filter(
                   (f: any) => f.properties.adm1_name === province,
                 );
                 mapInstance.fitBounds(getBounds(provinceFeatures), {
@@ -208,7 +219,7 @@ export default function MapClient() {
               }
               if (province) {
                 setProvince(null);
-                mapInstance.fitBounds(getBounds(provinces.features), {
+                mapInstance.fitBounds(getBounds(provincesData.features), {
                   padding: [20, 20],
                 });
               }

@@ -5,10 +5,14 @@ import L from "leaflet";
 import { Feature, FeatureCollection } from "geojson";
 import communes from "@/lib/khm_admin3.json";
 
-interface CommuneFeature extends Feature<
+type CommuneFeature = Feature<
   GeoJSON.Geometry,
   { adm2_name: string; adm3_name: string }
-> {}
+>;
+const communesData = communes as FeatureCollection<
+  GeoJSON.Geometry,
+  { adm2_name: string; adm3_name: string }
+>;
 
 interface CommuneLayerProps {
   district: string;
@@ -23,8 +27,8 @@ export default function CommuneLayer({
 }: CommuneLayerProps) {
   const map = useMap();
 
-  const filtered = communes.features.filter(
-    (f) => (f as CommuneFeature).properties.adm2_name === district,
+  const filtered = communesData.features.filter(
+    (f) => f.properties.adm2_name === district,
   );
 
   return (
