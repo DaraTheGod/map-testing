@@ -1,6 +1,32 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
+// 1. MODULE AUGMENTATION: Fixes Session and JWT type errors
+declare module "next-auth" {
+  interface Session {
+    googleId?: string;
+    accessToken?: string;
+    idToken?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    googleId?: string;
+    accessToken?: string;
+    idToken?: string;
+    picture?: string;
+  }
+}
+
+// 2. PROVIDER TYPE: Fixes the 'profile.picture' error
+interface GoogleProfile {
+  sub: string;
+  name: string;
+  email: string;
+  picture: string;
+}
+
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -15,13 +41,14 @@ const handler = NextAuth({
 
   callbacks: {
     async jwt({ token, account, profile }) {
-      // runs on login
+      // Cast profile to our custom GoogleProfile to access .picture and .sub safely
+      const googleProfile = profile as unknown as GoogleProfile;
 
-      if (account && profile) {
-        token.googleId = profile.sub;
-        token.name = profile.name;
-        token.email = profile.email;
-        token.picture = profile.picture;
+      if (account && googleProfile) {
+        token.googleId = googleProfile.sub;
+        token.name = googleProfile.name;
+        token.email = googleProfile.email;
+        token.picture = googleProfile.picture;
 
         token.accessToken = account.access_token;
         token.idToken = account.id_token;
@@ -31,13 +58,12 @@ const handler = NextAuth({
     },
 
     async session({ session, token }) {
-      // send data to frontend
-
-      session.user = {
-        name: token.name,
-        email: token.email,
-        image: token.picture,
-      };
+      // These no longer error because of the 'declare module' above
+      if (session.user) {
+        session.user.name = token.name;
+        session.user.email = token.email;
+        session.user.image = token.picture;
+      }
 
       session.googleId = token.googleId;
       session.accessToken = token.accessToken;
@@ -46,21 +72,15 @@ const handler = NextAuth({
       return session;
     },
 
-    async signIn({ user, account, profile }) {
+    async signIn({ account, profile }) {
+      const googleProfile = profile as unknown as GoogleProfile;
+
       console.log("===== GOOGLE LOGIN =====");
-
-      console.log("SAVE THIS TO DB:");
-      console.log({
-        googleId: profile?.sub,
-        email: profile?.email,
-        name: profile?.name,
-        image: profile?.picture,
-      });
-
-      console.log("TOKENS (TEMP):");
-      console.log({
-        access_token: account?.access_token,
-        id_token: account?.id_token,
+      console.log("SAVE THIS TO DB:", {
+        googleId: googleProfile?.sub,
+        email: googleProfile?.email,
+        name: googleProfile?.name,
+        image: googleProfile?.picture,
       });
 
       return true;
