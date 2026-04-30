@@ -48,7 +48,7 @@ export default function CommuneLayer({
         return {
           color: "#000000",
           weight: isSelected ? 3 : 1,
-          fillColor: isSelected ? "#FFFFFF" : "#FFFFFF",
+          fillColor: isSelected ? "#FF0000" : "#FFFFFF",
           // fillOpacity: isSelected ? 0.6 : 0.2,
         };
       }}

@@ -32,7 +32,7 @@ export default function DistrictLayer({ province, onSelect }: any) {
         color: "#000000",
         weight: 1,
         // fillColor: "#22c55e",
-        // fillOpacity: 0.2,
+        fillOpacity: 0,
       })}
       onEachFeature={(feature: any, layer) => {
         const name = feature.properties.adm2_name;
