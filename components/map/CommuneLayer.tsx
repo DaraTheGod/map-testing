@@ -46,10 +46,10 @@ export default function CommuneLayer({
         const isSelected = name === selectedCommune;
 
         return {
-          color: "#ef4444",
+          color: "#000000",
           weight: isSelected ? 3 : 1,
-          fillColor: isSelected ? "#f87171" : "#fca5a5",
-          fillOpacity: isSelected ? 0.6 : 0.2,
+          fillColor: isSelected ? "#FFFFFF" : "#FFFFFF",
+          // fillOpacity: isSelected ? 0.6 : 0.2,
         };
       }}
       onEachFeature={(feature, layer) => {

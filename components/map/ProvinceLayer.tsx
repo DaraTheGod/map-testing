@@ -17,9 +17,9 @@ export default function ProvinceLayer({ onSelect }: any) {
     <GeoJSON
       data={provincesData}
       style={() => ({
-        color: "#2563eb",
-        weight: 2,
-        fillOpacity: 0.1,
+        color: "#000000",
+        weight: 1,
+        fillOpacity: 0,
       })}
       onEachFeature={(feature: any, layer) => {
         const name = feature.properties.adm1_name;

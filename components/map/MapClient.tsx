@@ -115,7 +115,7 @@ export default function MapClient() {
         }`}
       >
         <MapContainer center={[12, 105]} zoom={7} className="h-full w-full">
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
           <MapController setMap={setMapInstance} />
           <MapClickHandler
             isCreating={isCreating}
@@ -240,7 +240,6 @@ export default function MapClient() {
           )}
         </div>
 
-        {/* ➕ CREATE EVENT BUTTON */}
         {!isCreating ? (
           <button
             onClick={() => {
